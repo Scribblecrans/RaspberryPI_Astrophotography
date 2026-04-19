@@ -10,16 +10,19 @@ from PyQt5.QtWidgets import (
     QAction,
     QMessageBox,
     QSplashScreen,
-    QFileDialog
+    QFileDialog,
+    QGridLayout,
+    QLabel,
+    QFrame
 )
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 import time
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.active_action = True
+        self.active_action = False
         self.image_saved = None
         self.setWindowTitle("AstroMod")
         self.resize(1200, 1600)
@@ -44,6 +47,35 @@ class MainWindow(QMainWindow):
                               save_action, 
                               save_as_action,
                               exit_action])
+        
+        central_widget = QWidget()
+        layout = QGridLayout()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+        layout.setColumnStretch(0, 2)
+        layout.setColumnStretch(1, 5)
+        layout.setColumnStretch(2, 3)
+        layout.setColumnStretch(3, 2)
+        layout.setRowStretch(0, 1)
+        layout.setRowStretch(1, 5)
+        layout.setRowStretch(2, 3)
+        layout.setRowStretch(3, 1)
+        
+        pict_label = QLabel()
+        pict_label.setPixmap(QPixmap())
+        pict_label.setFrameStyle(QFrame.Box)
+        pict_label.setLineWidth(2)
+
+        title_label = QLabel("AstroMod")
+        title_label.setFont(QFont("Roboto Mono", 50))
+        title_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(pict_label, 1, 1, 2, 2)
+        layout.addWidget(title_label, 0, 1, 1, 2)
+
+
+
+
 
         self.closeEvent = lambda event: self.exit_application(event)
 
