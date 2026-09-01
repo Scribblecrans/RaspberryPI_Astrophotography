@@ -53,6 +53,20 @@ class Canon():
             ["gphoto2", "--set-config", f"autoexposuremode={mode}"]
         )
 
+    def image_format(self, format):
+        """TYPES OF IMAGES FILES TO TAKE 
+        Choice: 0 L
+        Choice: 1 cL
+        Choice: 2 M
+        Choice: 3 cM
+        Choice: 4 S
+        Choice: 5 cS
+        Choice: 6 RAW + L
+        Choice: 7 RAW"""
+        subprocess.run(
+            ["gphoto2", "--set-config", f"imageformat={format}"]
+        )
+
     def shutter_speed(self, length):
         """POSSIBLE TIME OPTIONS        Choice: 0 bulb
         Choice: 1 30
@@ -112,22 +126,28 @@ class Canon():
             "--set-config",
             f"shutterspeed={length}"
         ])
+    def start_exposure(self):
+        subprocess.run([
+            "gphoto2",
+            "--set-config",
+            "eosremoterelease=Press Full MF"
+        ])
+    def end_exposure(self):
+        subprocess.run([
+            "gphoto2",
+            "--set-config",
+            "eosremoterelease=Release Full"
+        ])
 
+    def download_image(self, filepath, name):
+        subprocess.run([
+            "sudo", "gphoto2", 
+            "--wait-event-and-download=CAPTURECOMPLETE", 
+            "--force-overwrite",
+            "--filename", f"{filepath}/{name}.jpg"
+        ])
     def capture(self, filepath, name):
-        # result = subprocess.run([
-        #     "gphoto2",
-        #     "--get-config",
-        #     f"shutterspeed"
-        # ])
-        # lengths = result.stdout
-        # for idx, txt in enumerate(lengths.split(" ")):
-        #     print(txt)
-        #     if txt == "Current:":
-        #         length = lengths.split[idx + 1]
-        #         print(length)
-
-        # if length == "bulb": print("true")
-        # else: 
+        """FOR NON-BULB MODES"""
         subprocess.run([
             "gphoto2",
             "--capture-image-and-download",
@@ -135,9 +155,11 @@ class Canon():
             f"{filepath}/{name}.CR2"
         ])
 
+import time
 if __name__ == "__main__":
     c = Canon()
-    c.shooting_mode(mode="Manual")
-    c.focus(mode="Manual")
-    c.shutter_speed("bulb")
-    c.capture(filepath="/home/scribblecrans/Desktop/RaspberryPI_Astrophotography/Backend/Images", name="test")
+    c.shooting_mode("Manual")
+    c.start_exposure()
+    time.sleep(3)
+    c.end_exposure()
+    c.download_image(filepath="/Users/evansumner/Projects/RaspberryPi Astrophotography/Backend/Camera_Control/Images", name="test")
